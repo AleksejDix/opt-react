@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/*
+ * Minimal token set so the copied InputSegmented utility classes resolve
+ * (border-input, ring-ring, border-destructive, text-muted-foreground, …).
+ * Values approximate the shadcn/Medidata light theme — enough to interact
+ * with and see the slots; this repro is about behaviour, not pixel fidelity.
+ */
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0a0a0a;
+  --color-border: #e5e5e5;
+  --color-input: #d4d4d4;
+  --color-ring: #2563eb;
+  --color-muted-foreground: #737373;
+  --color-destructive: #ef4444;
+
+  --animate-caret-blink: caret-blink 1s ease-out infinite;
+}
+
+@keyframes caret-blink {
+  0%,
+  70%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  50% {
+    opacity: 0;
+  }
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}

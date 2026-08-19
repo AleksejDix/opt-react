@@ -1,0 +1,6 @@
+export { InputSegmented } from "./InputSegmentedRoot"
+export { InputSegmentedGroup } from "./InputSegmentedGroup"
+export { InputSegmentedSlot } from "./InputSegmentedSlot"
+export { InputSegmentedSeparator } from "./InputSegmentedSeparator"
+export { REGEXP_ONLY_DIGITS } from "./GapBuffer"
+export type { InputSegmentedHandle } from "./InputSegmented.types"
