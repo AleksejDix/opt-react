@@ -23,6 +23,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # The lockfile is written by npm 11; the runner's bundled npm 10 rejects it
+      # ("Missing: vite from lock file"). Match the local npm major.
+      - run: npm i -g npm@11
       - run: npm ci
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3

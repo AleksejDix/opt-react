@@ -14,6 +14,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # The lockfile is written by npm 11; the runner's bundled npm 10 rejects it
+      # ("Missing: vite from lock file"). Match the local npm major.
+      - run: npm i -g npm@11
       - run: npm ci
       # Browser-mode Vitest needs a real Chromium; --with-deps pulls the OS libs.
       - run: npx playwright install --with-deps chromium
