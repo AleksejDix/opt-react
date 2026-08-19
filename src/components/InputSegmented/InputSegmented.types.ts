@@ -44,6 +44,13 @@ export type InputSegmentedProps = Omit<React.HTMLAttributes<HTMLDivElement>, "on
    * presentational (no per-slot click-to-position on pointer devices).
    */
   enableLongPressPaste?: boolean
+  /**
+   * Opt in to the WebOTP API (Chromium on Android): on mount, listen for an
+   * incoming SMS bound to this origin (`... @host #code`) and auto-fill the code.
+   * A no-op where WebOTP is unsupported (iOS, desktop, Firefox) — those rely on
+   * `autoComplete="one-time-code"` for the keyboard fill suggestion instead.
+   */
+  enableSmsAutofill?: boolean
   children: React.ReactNode
 }
 

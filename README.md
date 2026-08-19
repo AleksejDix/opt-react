@@ -20,6 +20,24 @@ On Android the long-press gesture that summons the selection / Paste menu is
 suppressed by exactly this combination, so there is no way to paste by
 long-press.
 
+## SMS auto-fill
+
+No single mechanism gives silent SMS autofill on every platform — this is a
+platform limit, not a code one. The fixed field uses the standard combo:
+
+- **`autocomplete="one-time-code"`** (on by default) — iOS/Safari and Android
+  surface the code as a keyboard suggestion the user taps.
+- **`enableSmsAutofill`** — opts into the **WebOTP API** (Chromium/Android): an
+  origin-bound SMS auto-fills with one consent tap. No-op on iOS/desktop/Firefox.
+
+WebOTP requires HTTPS (Pages ✓) and the SMS to end with the origin binding, e.g.:
+
+```
+Your code is 123456
+
+@dix.consulting #123456
+```
+
 ## Run locally
 
 ```bash

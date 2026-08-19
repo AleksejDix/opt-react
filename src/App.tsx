@@ -111,6 +111,7 @@ export function App() {
           pattern={REGEXP_ONLY_DIGITS}
           inputMode="numeric"
           enableLongPressPaste
+          enableSmsAutofill
         >
           <InputSegmentedGroup>
             {Array.from({ length: 6 }).map((_, i) => (
@@ -120,7 +121,8 @@ export function App() {
         </InputSegmented>
         <p className="text-xs text-muted-foreground">
           Current value: <code>{otpFixed || "(empty)"}</code> — long-press (Android) / right-click (desktop)
-          should offer <em>Paste</em>.
+          offers <em>Paste</em>. Also <code>enableSmsAutofill</code> (WebOTP) + <code>autocomplete="one-time-code"</code>:
+          an origin-bound SMS auto-fills on Android Chrome; iOS shows a keyboard suggestion.
         </p>
       </section>
 
