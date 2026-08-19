@@ -27,8 +27,11 @@ platform limit, not a code one. The fixed field uses the standard combo:
 
 - **`autocomplete="one-time-code"`** (on by default) — iOS/Safari and Android
   surface the code as a keyboard suggestion the user taps.
-- **`enableSmsAutofill`** — opts into the **WebOTP API** (Chromium/Android): an
-  origin-bound SMS auto-fills with one consent tap. No-op on iOS/desktop/Firefox.
+- **`useWebOtpAutofill(onCode)`** — a consumer-owned hook wrapping the **WebOTP
+  API** (Chromium/Android): an origin-bound SMS auto-fills with one consent tap.
+  No-op on iOS/desktop/Firefox. The hook lives *outside* the component (single
+  owner — WebOTP allows one request per page) and feeds the field's controlled
+  `value`, mirroring patientdelivery's `AuthSms/useWebOtpAutofill`.
 
 WebOTP requires HTTPS (Pages ✓) and the SMS to end with the origin binding, e.g.:
 

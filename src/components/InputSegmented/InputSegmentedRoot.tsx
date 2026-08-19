@@ -29,7 +29,6 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
     mask,
     autoComplete = "one-time-code",
     enableLongPressPaste,
-    enableSmsAutofill,
     children,
     ...props
   },
@@ -74,24 +73,6 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
   React.useEffect(() => {
     if (autoFocus) inputRef.current?.focus()
   }, [autoFocus])
-
-  // WebOTP (Chromium/Android): auto-read an origin-bound SMS and fill the code.
-  // Aborts on unmount and swallows the abort/no-SMS rejection. No-op elsewhere.
-  React.useEffect(() => {
-    if (!enableSmsAutofill) return
-    if (typeof window === "undefined" || !("OTPCredential" in window)) return
-    const ac = new AbortController()
-    navigator.credentials
-      .get({ otp: { transport: ["sms"] }, signal: ac.signal })
-      .then((credential) => {
-        const code = (credential as OTPCredential | null)?.code
-        if (code) dispatch({ type: "replaceValue", value: code })
-      })
-      .catch(() => {
-        /* aborted, unsupported, or no SMS arrived — nothing to do */
-      })
-    return () => ac.abort()
-  }, [enableSmsAutofill, dispatch])
 
   const focusSlot = React.useCallback(
     (index: number) => {

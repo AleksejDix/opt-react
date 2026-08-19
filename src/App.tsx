@@ -5,6 +5,7 @@ import {
   InputSegmentedSlot,
   REGEXP_ONLY_DIGITS
 } from "./components/InputSegmented/InputSegmented"
+import { useWebOtpAutofill } from "./hooks/useWebOtpAutofill"
 
 const TEST_CODE = "123456"
 
@@ -21,6 +22,13 @@ export function App() {
     const id = logCounter.current
     setLog((prev) => [`#${id}  ${message}`, ...prev].slice(0, 12))
   }
+
+  // WebOTP lives in the consumer (single owner) and feeds the fixed field's
+  // controlled value — the InputSegmented stays presentational.
+  useWebOtpAutofill((code) => {
+    setOtpFixed(code)
+    addLog(`WebOTP → filled "${code}"`)
+  })
 
   const copyTestCode = async () => {
     try {
@@ -111,7 +119,6 @@ export function App() {
           pattern={REGEXP_ONLY_DIGITS}
           inputMode="numeric"
           enableLongPressPaste
-          enableSmsAutofill
         >
           <InputSegmentedGroup>
             {Array.from({ length: 6 }).map((_, i) => (
@@ -121,8 +128,9 @@ export function App() {
         </InputSegmented>
         <p className="text-xs text-muted-foreground">
           Current value: <code>{otpFixed || "(empty)"}</code> — long-press (Android) / right-click (desktop)
-          offers <em>Paste</em>. Also <code>enableSmsAutofill</code> (WebOTP) + <code>autocomplete="one-time-code"</code>:
-          an origin-bound SMS auto-fills on Android Chrome; iOS shows a keyboard suggestion.
+          offers <em>Paste</em>. SMS auto-fill is driven by the consumer via{" "}
+          <code>useWebOtpAutofill</code> (WebOTP, Android Chrome) plus{" "}
+          <code>autocomplete="one-time-code"</code> (iOS keyboard suggestion).
         </p>
       </section>
 
