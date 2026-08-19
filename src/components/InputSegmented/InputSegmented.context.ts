@@ -10,6 +10,12 @@ export type InputSegmentedContextValue = {
   maxLength: number
   disabled?: boolean
   mask?: boolean
+  /**
+   * When true, the real <input> is the pointer/touch target (layered on top,
+   * pointer-events enabled) so the OS long-press / right-click "Paste" menu can
+   * reach it. Slots become purely presentational. See `enableLongPressPaste`.
+   */
+  interactive?: boolean
 }
 
 export const InputSegmentedContext = React.createContext<InputSegmentedContextValue | null>(null)

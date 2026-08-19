@@ -28,6 +28,7 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
     pasteTransformer,
     mask,
     autoComplete = "one-time-code",
+    enableLongPressPaste,
     children,
     ...props
   },
@@ -89,9 +90,10 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
       focusSlot,
       maxLength,
       disabled,
-      mask
+      mask,
+      interactive: enableLongPressPaste
     }),
-    [buffer.slots, buffer.cursor, focusSlot, maxLength, disabled, mask]
+    [buffer.slots, buffer.cursor, focusSlot, maxLength, disabled, mask, enableLongPressPaste]
   )
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -137,6 +139,7 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
           value={buffer.toString()}
           maxLength={maxLength}
           disabled={disabled}
+          interactive={enableLongPressPaste}
           inputMode={inputMode}
           autoComplete={autoComplete}
           onKeyDown={handleKeyDown}

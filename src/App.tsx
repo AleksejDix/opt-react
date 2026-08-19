@@ -10,6 +10,7 @@ const TEST_CODE = "123456"
 
 export function App() {
   const [otp, setOtp] = useState("")
+  const [otpFixed, setOtpFixed] = useState("")
   const [nativeValue, setNativeValue] = useState("")
   const [log, setLog] = useState<string[]>([])
   const [copied, setCopied] = useState(false)
@@ -45,20 +46,21 @@ export function App() {
       </header>
 
       <section className="rounded-md border border-border p-4">
-        <h2 className="mb-2 text-sm font-semibold">Steps to reproduce</h2>
+        <h2 className="mb-2 text-sm font-semibold">Steps</h2>
         <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
           <li>
             Tap <strong>Copy test code</strong> below (puts <code>{TEST_CODE}</code> on the clipboard).
           </li>
           <li>
-            <strong>Long-press</strong> any slot of the OTP field.
+            On the <strong>bug</strong> field: <strong>long-press</strong> a slot (Android) or{" "}
+            <strong>right-click</strong> it (desktop). No <em>Paste</em> menu appears — nothing happens.
           </li>
           <li>
-            <strong>Bug:</strong> no selection handles / no <em>Paste</em> popup appears — nothing happens.
+            On the <strong>fixed</strong> field: same gesture now shows the <em>Paste</em> menu; tapping{" "}
+            <em>Paste</em> fills the code.
           </li>
           <li>
-            Long-press the plain input at the bottom for contrast — there the <em>Paste</em> popup appears
-            normally.
+            The plain input at the bottom is a control — the <em>Paste</em> menu always works there.
           </li>
         </ol>
         <button
@@ -91,6 +93,34 @@ export function App() {
         </InputSegmented>
         <p className="text-xs text-muted-foreground">
           Current value: <code>{otp || "(empty)"}</code>
+        </p>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-semibold">
+          OTP component (fixed — <code>enableLongPressPaste</code>)
+        </h2>
+        <InputSegmented
+          maxLength={6}
+          value={otpFixed}
+          onChange={(next) => {
+            setOtpFixed(next)
+            addLog(`FIXED onChange → "${next}"`)
+          }}
+          onComplete={(next) => addLog(`FIXED onComplete → "${next}"`)}
+          pattern={REGEXP_ONLY_DIGITS}
+          inputMode="numeric"
+          enableLongPressPaste
+        >
+          <InputSegmentedGroup>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <InputSegmentedSlot key={i} index={i} size="xl" />
+            ))}
+          </InputSegmentedGroup>
+        </InputSegmented>
+        <p className="text-xs text-muted-foreground">
+          Current value: <code>{otpFixed || "(empty)"}</code> — long-press (Android) / right-click (desktop)
+          should offer <em>Paste</em>.
         </p>
       </section>
 
