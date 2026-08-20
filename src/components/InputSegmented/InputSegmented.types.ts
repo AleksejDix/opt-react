@@ -37,13 +37,6 @@ export type InputSegmentedProps = Omit<React.HTMLAttributes<HTMLDivElement>, "on
   mask?: boolean
   /** Fires when a typed character is rejected by `pattern`. Use to flash a hint ("Only digits allowed"). */
   onInvalid?: (rejectedChar: string) => void
-  /**
-   * Layer the real <input> on top of the slots and let it receive pointer/touch
-   * events, so the OS long-press (Android) and right-click (desktop) "Paste" menu
-   * can target it. Fixes the segmented-OTP long-press-to-paste bug. Slots become
-   * presentational (no per-slot click-to-position on pointer devices).
-   */
-  enableLongPressPaste?: boolean
   children: React.ReactNode
 }
 

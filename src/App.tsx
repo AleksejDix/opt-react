@@ -10,7 +10,6 @@ import { useWebOtpAutofill } from "./hooks/useWebOtpAutofill"
 const TEST_CODE = "123456"
 
 export function App() {
-  const [otp, setOtp] = useState("")
   const [otpFixed, setOtpFixed] = useState("")
   const [nativeValue, setNativeValue] = useState("")
   const [log, setLog] = useState<string[]>([])
@@ -81,44 +80,17 @@ export function App() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold">OTP component (bug)</h2>
-        <InputSegmented
-          maxLength={6}
-          value={otp}
-          onChange={(next) => {
-            setOtp(next)
-            addLog(`OTP onChange → "${next}"`)
-          }}
-          onComplete={(next) => addLog(`OTP onComplete → "${next}"`)}
-          pattern={REGEXP_ONLY_DIGITS}
-          inputMode="numeric"
-        >
-          <InputSegmentedGroup>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <InputSegmentedSlot key={i} index={i} size="xl" />
-            ))}
-          </InputSegmentedGroup>
-        </InputSegmented>
-        <p className="text-xs text-muted-foreground">
-          Current value: <code>{otp || "(empty)"}</code>
-        </p>
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold">
-          OTP component (fixed — <code>enableLongPressPaste</code>)
-        </h2>
+        <h2 className="text-sm font-semibold">OTP component (long-press paste)</h2>
         <InputSegmented
           maxLength={6}
           value={otpFixed}
           onChange={(next) => {
             setOtpFixed(next)
-            addLog(`FIXED onChange → "${next}"`)
+            addLog(`OTP onChange → "${next}"`)
           }}
-          onComplete={(next) => addLog(`FIXED onComplete → "${next}"`)}
+          onComplete={(next) => addLog(`OTP onComplete → "${next}"`)}
           pattern={REGEXP_ONLY_DIGITS}
           inputMode="numeric"
-          enableLongPressPaste
         >
           <InputSegmentedGroup>
             {Array.from({ length: 6 }).map((_, i) => (

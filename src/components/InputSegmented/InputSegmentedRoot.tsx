@@ -28,7 +28,6 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
     pasteTransformer,
     mask,
     autoComplete = "one-time-code",
-    enableLongPressPaste,
     children,
     ...props
   },
@@ -45,6 +44,7 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
   })
 
   const inputRef = React.useRef<HTMLInputElement>(null)
+  const containerRef = React.useRef<HTMLDivElement>(null)
   // Tracks whether the user has interacted with this component. We can't snapshot
   // `document.activeElement === inputRef.current` once disabled flips because the
   // DOM has already blurred the input by the time our layout effect runs. Instead
@@ -74,27 +74,39 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
     if (autoFocus) inputRef.current?.focus()
   }, [autoFocus])
 
-  const focusSlot = React.useCallback(
-    (index: number) => {
-      hasUserInteractedRef.current = true
-      inputRef.current?.focus()
-      dispatch({ type: "moveCursor", toIndex: index })
-    },
-    [dispatch]
-  )
-
   const ctxValue = React.useMemo<InputSegmentedContextValue>(
     () => ({
       slots: buffer.slots,
       cursor: buffer.cursor,
-      focusSlot,
       maxLength,
       disabled,
-      mask,
-      interactive: enableLongPressPaste
+      mask
     }),
-    [buffer.slots, buffer.cursor, focusSlot, maxLength, disabled, mask, enableLongPressPaste]
+    [buffer.slots, buffer.cursor, maxLength, disabled, mask]
   )
+
+  // The input sits on top and owns pointer events (so the OS long-press "Paste"
+  // menu can reach it). Preserve click-to-focus by hit-testing the pointer
+  // against the presentational slots and parking the cursor on the one pressed.
+  const handlePointerDown = (event: React.PointerEvent<HTMLInputElement>) => {
+    hasUserInteractedRef.current = true
+    inputRef.current?.focus()
+    const slotEls = containerRef.current?.querySelectorAll<HTMLElement>('[data-slot="input-segmented-slot"]')
+    if (!slotEls) return
+    for (const el of slotEls) {
+      const rect = el.getBoundingClientRect()
+      if (
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom
+      ) {
+        const index = Number(el.dataset.index)
+        if (!Number.isNaN(index)) dispatch({ type: "moveCursor", toIndex: index })
+        return
+      }
+    }
+  }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     hasUserInteractedRef.current = true
@@ -106,6 +118,7 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
   }
 
   const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    hasUserInteractedRef.current = true
     event.preventDefault()
     const raw = event.clipboardData.getData("text/plain")
     const text = pasteTransformer ? pasteTransformer(raw) : raw
@@ -131,6 +144,7 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
           className
         )}
         onBlur={handleBlur}
+        ref={containerRef}
         {...props}
       >
         {children}
@@ -139,11 +153,11 @@ export const InputSegmented = React.forwardRef<InputSegmentedHandle, InputSegmen
           value={buffer.toString()}
           maxLength={maxLength}
           disabled={disabled}
-          interactive={enableLongPressPaste}
           inputMode={inputMode}
           autoComplete={autoComplete}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
+          onPointerDown={handlePointerDown}
           onAutofill={(autofilled) => dispatch({ type: "replaceValue", value: autofilled })}
         />
         <InputSegmentedLiveRegion filledCount={filledCount} maxLength={maxLength} isComplete={buffer.isComplete} />

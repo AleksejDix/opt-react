@@ -1,4 +1,3 @@
-import * as React from "react"
 import { cn } from "../../lib/utils"
 import { useInputSegmentedContext } from "./InputSegmented.context"
 import { InputSegmentedBlinkingCaret } from "./InputSegmentedBlinkingCaret"
@@ -19,33 +18,16 @@ export function InputSegmentedSlot({
   const isActive = ctx.cursor === index
   const hasFakeCaret = isActive && !char
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    // When interactive, the input sits on top and owns pointer events; slots must
-    // not preventDefault or they'd suppress the OS selection / Paste gesture.
-    if (ctx.interactive) {
-      onMouseDown?.(event)
-      return
-    }
-    // Prevent the click from blurring the hidden input before we re-focus it.
-    event.preventDefault()
-    ctx.focusSlot(index)
-    onMouseDown?.(event)
-  }
-
+  // Slots are presentational: the input on top owns pointer/touch (so the OS
+  // long-press "Paste" menu can reach it). Click-to-focus is resolved by the
+  // input's pointer hit-test (see InputSegmentedRoot), not per-slot handlers.
   return (
     <div
       data-slot="input-segmented-slot"
       data-index={index}
       data-active={isActive || undefined}
-      onMouseDown={handleMouseDown}
-      className={cn(
-        inputSegmentedSlotVariants({ size }),
-        // Keep `select-none` only in the (buggy) non-interactive mode. When
-        // interactive we must allow selection so the long-press gesture survives.
-        !ctx.interactive && "select-none",
-        ctx.disabled && "pointer-events-none",
-        className
-      )}
+      onMouseDown={onMouseDown}
+      className={cn(inputSegmentedSlotVariants({ size }), ctx.disabled && "pointer-events-none", className)}
       aria-hidden="true"
       {...props}
     >
