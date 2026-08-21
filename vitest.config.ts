@@ -9,6 +9,10 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   test: {
+    // Component tests only. The e2e/ specs import @playwright/test and are run
+    // by the Playwright runner; pulling them in here tries to bundle
+    // playwright-core for the browser and dies on its native requires.
+    include: ["src/**/*.test.{ts,tsx}"],
     browser: {
       enabled: true,
       provider: "playwright",

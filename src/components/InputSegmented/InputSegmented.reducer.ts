@@ -25,8 +25,17 @@ export function reduce(buffer: GapBuffer, action: SegmentedAction): ReduceResult
       return { buffer: buffer.insertAt(buffer.cursor, action.char) }
     case "pressBackspace":
       return { buffer: buffer.backspaceAt(buffer.cursor) }
-    case "pasteText":
+    case "pasteText": {
+      // A paste carrying a whole code means "here is the code", not "insert at
+      // my cursor". Starting at the cursor silently drops the overflow: pasting
+      // 123456 while the cursor sat on slot 3 used to yield "   123", which is
+      // exactly what a long-press on a middle slot does.
+      const accepted = [...action.text].filter((char) => buffer.accepts(char))
+      if (accepted.length >= buffer.maxLength) {
+        return { buffer: buffer.setValue(accepted.slice(0, buffer.maxLength).join("")) }
+      }
       return { buffer: buffer.pasteAt(buffer.cursor, action.text) }
+    }
     case "moveCursor":
       return { buffer: buffer.focus(action.toIndex) }
     case "replaceValue":
