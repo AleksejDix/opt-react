@@ -51,8 +51,14 @@ export function InputSegmentedHiddenInput({
       onPaste={onPaste}
       onPointerDown={onPointerDown}
       // Sit above the slots (z-20 > active slot's z-10) and accept pointer/touch
-      // so the native Paste menu reaches this input.
-      className="absolute inset-0 size-full opacity-0 z-20 cursor-text"
+      // so the native Paste menu reaches this input. It must stay `opacity-1`:
+      // iOS and Android offer no long-press callout on an input the engine
+      // paints nothing for, so invisibility comes from transparent ink instead.
+      className={
+        "absolute inset-0 size-full z-20 cursor-text opacity-100 border-0 bg-transparent p-0 shadow-none outline-none " +
+        "text-transparent caret-transparent [-webkit-text-fill-color:transparent] " +
+        "selection:bg-transparent selection:text-transparent"
+      }
     />
   )
 }

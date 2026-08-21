@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest"
 import { cleanup, render } from "@testing-library/react"
 import { InputSegmented, InputSegmentedGroup, InputSegmentedSlot, REGEXP_ONLY_DIGITS } from "./InputSegmented"
+import { longPress } from "../../test/longPress"
 import "../../index.css"
 
 /**
@@ -78,5 +79,39 @@ describe("segmented OTP — long-press paste (always on)", () => {
     input.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: x, clientY: y }))
 
     await expect.poll(() => slots[3].getAttribute("data-active")).toBe("true")
+  })
+})
+
+describe("segmented OTP — the long-press gesture itself", () => {
+  it("offers the Paste callout when long-pressing any slot", async () => {
+    const { container } = render(<Otp />)
+    const { slots } = query(container)
+    for (const slot of slots) {
+      const press = await longPress(slot)
+      expect(press.blockedBy).toBeNull()
+      expect(press.menu).not.toBeNull()
+    }
+  })
+
+  it("fills every slot when the user taps Paste", async () => {
+    const { container } = render(<Otp />)
+    const { input, slots } = query(container)
+
+    const press = await longPress(slots[0])
+    press.menu!.paste("123456")
+
+    await expect.poll(() => input.value).toBe("123456")
+    await expect.poll(() => slots.map((s) => s.textContent)).toEqual(["1", "2", "3", "4", "5", "6"])
+  })
+
+  it("keeps the code invisible on the input itself, so the slots stay the only rendering", () => {
+    const { container } = render(<Otp />)
+    const { input } = query(container)
+    const style = getComputedStyle(input)
+
+    expect(style.color).toBe("rgba(0, 0, 0, 0)")
+    expect(style.caretColor).toBe("rgba(0, 0, 0, 0)")
+    expect(style.backgroundColor).toBe("rgba(0, 0, 0, 0)")
+    expect(style.borderTopWidth).toBe("0px")
   })
 })
